@@ -7,7 +7,7 @@ This is a Laravel like Queues for CodeIgniter 4.
 You can install the package via composer:
 
 ```bash
-composer require igniter/queues
+composer require ignitor/queues
 
 php spark queue:table
 

@@ -1,5 +1,5 @@
 {
-    "name": "igniter/queues",
+    "name": "ignitor/queues",
     "description": "Better Queues for CodeIgniter 4",
     "type": "library",
     "keywords": ["framework", "CodeIgniter", "Queues"],
