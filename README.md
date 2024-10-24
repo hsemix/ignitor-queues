@@ -8,6 +8,10 @@ You can install the package via composer:
 
 ```bash
 composer require igniter/queues
+
+php spark queue:table
+
+php spark migrate
 ```
 
 ## Usage
