@@ -74,7 +74,7 @@ class QueueWork extends BaseCommand
         CLI::write('Working Queue: ' . $queue, 'yellow');
 
         // Check if pcntl extension is loaded
-        if (extension_loaded('pcntl')) {
+        if (extension_loaded('pcntl') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 
             // Set the number of workers
             $this->numWorkers = $this->getOption('workers') ?? 5;
