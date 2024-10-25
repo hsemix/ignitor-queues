@@ -2,7 +2,4 @@
 
 namespace Igniter\Queues\Queue;
 
-interface ShouldQueueInterface extends \JsonSerializable
-{
-    
-}
+interface ShouldQueueInterface extends \JsonSerializable {}
