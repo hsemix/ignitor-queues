@@ -37,7 +37,7 @@ class QueueWork extends BaseCommand
      *
      * @var int
      */
-    protected $numWorkers = 5; // You can adjust this number as needed
+    protected $numWorkers = 1; // You can adjust this number as needed
 
     /**
      * The Command's Options
@@ -48,7 +48,10 @@ class QueueWork extends BaseCommand
         '--queue' => 'Provide a name for which queue to work on', 
         '--retry' => 'Provide a number of retries for failed jobs',
         '--workers' => 'Provide a number of workers to run',
+        '--restart' => 'Restart the queue automatically when it stops',
     ];
+
+    protected bool $restart = false;
 
     /**
      * Queue connection instance
@@ -69,15 +72,17 @@ class QueueWork extends BaseCommand
      */
     public function run(array $params)
     {
-        $queue = $this->options['--queue'] = $this->getOption('queue') ?? 'default';
+        $queue = $this->getOption('queue') ?? 'default';
+
+        $this->restart = $this->getOption('restart') ?? false;
 
         CLI::write('Working Queue: ' . $queue, 'yellow');
 
         // Check if pcntl extension is loaded
-        if (extension_loaded('pcntl')) {
+        if (extension_loaded('pcntl') && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 
             // Set the number of workers
-            $this->numWorkers = $this->getOption('workers') ?? 5;
+            $this->numWorkers = $this->getOption('workers') ?? 1;
 
             CLI::write('Running with multiple workers(' . $this->numWorkers . ') (PCNTL enabled)', 'green');
 
@@ -130,7 +135,7 @@ class QueueWork extends BaseCommand
             try {
                 if ($this->stopIfNecessary($startTime, $jobsProcessed)) {
                     // Restart the worker if necessary
-                    $this->restartWorker();
+                    $this->restartWorker($queue);
                 }
 
                 $response = $this->connection->fetch([$this, 'fire'], $queue);
@@ -153,7 +158,7 @@ class QueueWork extends BaseCommand
      */
     public function fire($data)
     {
-        if ($data['job'] == 'Mcash\Queue\CallQueuedHandler@call') {
+        if ($data['job'] == 'Igniter\Queue\CallQueuedHandler@call') {
             $job = unserialize($data['data']['job']);
             CLI::write('Running Job #' . $data['data']['jobName'], 'yellow');
             $job->run();
@@ -200,10 +205,13 @@ class QueueWork extends BaseCommand
     /**
      * Restart the worker by forking a new process.
      */
-    protected function restartWorker()
+    protected function restartWorker($queue)
     {
-        // CLI::write('Restarting Queue Worker...', 'yellow');
-        // exec("php " . ROOTPATH . "spark queue:work"); // Re-execute the queue worker
+        if ($this->restart) {
+            CLI::write('Restarting Queue Worker...', 'yellow');
+            exec("php " . ROOTPATH . "spark queue:work --restart --queue " . $queue . " --workers " . $this->workers); // Re-execute the queue worker
+        }
+        
         exit(0); // Ensure the current process terminates after restart
     }
 

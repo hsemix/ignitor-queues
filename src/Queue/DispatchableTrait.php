@@ -3,7 +3,7 @@
 namespace Igniter\Queues\Queue;
 
 use Igniter\Queues\Queue\Config\Services;
-use Igniter\Queues\Queue\ShouldQueueInterface;
+// use Igniter\Queues\Queue\ShouldQueueInterface;
 
 trait DispatchableTrait
 {

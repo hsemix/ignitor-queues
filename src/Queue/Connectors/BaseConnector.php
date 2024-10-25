@@ -184,7 +184,7 @@ abstract class BaseConnector
         	$job = serialize(clone $payload);
 
 			$this->send([
-				'job'  => 'Mcash\Queue\CallQueuedHandler@call',
+				'job'  => 'Igniter\Queue\CallQueuedHandler@call',
 				'data' => compact('jobName', 'job'),
 			], $payload->queue ?? $queue);
 
