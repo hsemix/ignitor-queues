@@ -129,6 +129,15 @@ public function testQueue()
 }
 ```
 
+For a dedicated job, you can use pass as arguments to the dispatch method.
+
+```php
+TestJob::dispatch('some data');
+
+TestJob::dispatch('some data', 'more data', 'even more data');
+```
+This data will be available in the job as constructor arguments in your job class.
+
 ## Delaying the Job
 
 You can delay the job by using the `delay` method.
