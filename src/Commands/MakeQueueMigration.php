@@ -70,7 +70,7 @@ class MakeQueueMigration extends BaseCommand
 
     protected function compileMigrationTemp()
     {
-        return file_get_contents(__DIR__.'/Queue/temps/jobs_table.temp');
+        return file_get_contents(__DIR__.'/../Queue/temps/jobs_table.temp');
     }
 
     
