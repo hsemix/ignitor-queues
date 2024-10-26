@@ -6,7 +6,7 @@ use Opis\Closure\SerializableClosure;
 use Igniter\Queues\Queue\DispatchableTrait;
 use Igniter\Queues\Queue\ShouldQueueInterface;
 
-class ClosureJob implements ShouldQueueInterface
+class ClosureJob implements ShouldQueueInterface, CanFailInterface
 {
     use DispatchableTrait;
 
@@ -38,12 +38,13 @@ class ClosureJob implements ShouldQueueInterface
      *
      * @return void
      */
-    public function __construct(public $job, public $data = [], $delay = 0, $delayType = 'minutes', $queue = 'default')
+    public function __construct(public $job, public $data = [], $delay = 0, $delayType = 'minutes', $queue = 'default', $onFailure = null)
     {
         $this->job = new SerializableClosure($job);
         $this->delay = $delay;
         $this->delayType = $delayType;
         $this->queue = $queue;
+        $this->onFailure = $onFailure;
     }
 
     /**
@@ -54,5 +55,16 @@ class ClosureJob implements ShouldQueueInterface
     public function run()
     {   
         return call_user_func($this->job, $this->data);
+    }
+
+    /**
+     * Triggered when this job fails for whatever reason and only if this job is queueable
+     * 
+     * @param stdClass $job
+     * @param string $message
+     */
+    public function onFailure($job, $message)
+    {
+        return $this->onFailure ? call_user_func($this->onFailure, $job, $message) : null;
     }
 }

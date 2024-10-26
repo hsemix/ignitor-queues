@@ -283,6 +283,113 @@ To specify the queue name when working the queue, you can use the `--queue` opti
 php spark queue:work --queue emails
 ```
 
+## Handling Failed Jobs
+You can handle a failed job at a per-job basis by implementing the `CanFailInterface` interface.
+
+```php
+<?php
+
+namespace App\Jobs;
+
+use Igniter\Queues\Queue\DispatchableTrait;
+use Igniter\Queues\Queue\ShouldQueueInterface;
+use Igniter\Queues\Queue\CanFailInterface;
+
+class TestJob implements ShouldQueueInterface, CanFailInterface
+{
+    use DispatchableTrait;
+
+    /**
+     * The queue to run the job on.
+     *
+     * @var string
+     */
+    public string $queue = 'default';
+
+    /**
+     * Delay the job by a given amount of seconds.
+     *
+     * @param int $delay
+     *
+     */
+    public int $delay = 0;
+
+    /**
+     * Delay the job by a given amount of seconds.
+     *
+     * @param string $delayType
+     *
+     */
+    public string $delayType = 'minutes';
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct($data)
+    {
+        //
+        $this->data = $data;
+    }
+
+    /**
+     * Run the job.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // log to file or send an email, etc.
+    }
+
+    /**
+     * Triggered when this job fails for whatever reason and only if this job is queueable
+     * 
+     * @param stdClass $job
+     * @param string $message
+     */
+    public function onFailure($job, $message)
+    {
+        if ($job->attempts >= 3) { // It totally failed
+            $email = service('email');
+            $email->setTo('info@example.com');
+            $email->setSubject('Some Subject');
+            $email->setMessage('Some Message: job-id(' . $job->id . ') <br /> Data:' . json_encode($this->data) . ' with messege: ' . $message);
+            $email->send();
+        }
+    }
+}
+```
+
+For non-dedicated jobs, you can pass a closure to the toQueue method.
+
+```php
+public function testQueue()
+{
+    toQueue(
+        callback: function ($data) {
+            sleep(10);
+            // log to file or send an email
+        },
+        data: ['data' => 'some data'],
+        onFailure: function ($job, $message) {
+            if ($job->attempts >= 3) { // It totally failed
+                $email = service('email');
+                $email->setTo('info@example.com');
+                $email->setSubject('Some Subject');
+                $email->setMessage('Some Message: job-id(' . $job->id . ') <br /> Data:' . json_encode($data) . ' with message: ' . $message);
+                $email->send();
+            }
+        }
+    );
+
+    return "Request is being Processed";
+}
+```
+
+
+
 
 ## License
 
