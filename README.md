@@ -395,7 +395,7 @@ You can run a queue as a cron job by using the `queue:work` command.
 In your crontab file, add the following line:
 
 ```bash
-*/5 * * * * php spark queue:work
+*/5 * * * * cd /var/www/html/your-project && php spark queue:work
 ```
 
 This will run the queue every 5 minutes.
@@ -403,12 +403,12 @@ This will run the queue every 5 minutes.
 You can also specify the queue name by using the `--queue` option.
 
 ```bash
-*/5 * * * * php spark queue:work --queue emails
+*/5 * * * * cd /var/www/html/your-project && php spark queue:work --queue emails
 ```
 You can also specify the number of workers to run by using the `--workers` option.
 
 ```bash
-*/5 * * * * php spark queue:work --workers 4
+*/5 * * * * cd /var/www/html/your-project && php spark queue:work --workers 4
 ```
 
 
