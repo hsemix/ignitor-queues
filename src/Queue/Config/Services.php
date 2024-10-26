@@ -27,4 +27,13 @@ class Services extends BaseService
     
         return static::getSharedInstance('queue')->connect();
     }
+
+    public static function encryption($getShared = false)
+    {
+        if (!$getShared) {
+            return service('encrypter');
+        }
+    
+        return static::getSharedInstance('encryption');
+    }
 }

@@ -3,7 +3,6 @@
 namespace Igniter\Queues\Queue;
 
 use Igniter\Queues\Queue\Config\Services;
-// use Igniter\Queues\Queue\ShouldQueueInterface;
 
 trait DispatchableTrait
 {
@@ -14,14 +13,24 @@ trait DispatchableTrait
 
     protected bool $queued = false;
 
+    protected $encryptionService;
+
+    protected array $primaryProperties = [
+        'encryptionService', 
+        'delayType', 
+        'delay', 
+        'queue', 
+        'queued'
+    ];
+
     /**
      * Delay the job by a given amount of seconds.
      *
      * @param int $delay
      *
-     * @return static
+     * @return mixed
      */
-    public function delay(int $delay, string $type = 'minutes'): static
+    public function delay(int $delay, string $type = 'minutes'): self
     {
         $this->delay = $delay;
 
@@ -179,13 +188,8 @@ trait DispatchableTrait
 
     /**
      * Implement a json serializer
-     * 
-     * @param null
-     * 
-     * @return array
      */
-    #[\ReturnTypeWillChange]
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $attributes = (array) $this->properties;
     
@@ -202,5 +206,59 @@ trait DispatchableTrait
             return $attribute;
         }, $attributes);
         return $attributes;
+    }
+
+    public function __serialize(): array
+    {
+        $properties = get_object_vars($this);
+
+        if (is_null($this->encryptionService)) {
+            $this->encryptionService = Services::encryption();
+        }
+
+        // Encrypt properties if the job implements IsEncryptedInterface
+        if ($this instanceof IsEncryptedInterface) {
+            foreach ($properties as $key => $value) {
+                if (in_array($key, ['encryptionService', 'delayType', 'delay', 'queue', 'queued'])) continue;
+
+                if (is_string($value)) {
+                    $properties[$key] = base64_encode($this->encryptionService->encrypt($value));
+                }
+
+                if (is_array($value)) {
+                    $properties[$key] = base64_encode($this->encryptionService->encrypt(json_encode($value)));
+                }
+            }
+        }
+
+        return $properties;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        if (is_null($this->encryptionService)) {
+            $this->encryptionService = Services::encryption();
+        }
+
+        // Decrypt properties if the job implements IsEncryptedInterface
+        if ($this instanceof IsEncryptedInterface) {
+            foreach ($data as $key => $value) {
+
+                if (in_array($key, $this->primaryProperties)) continue;
+                
+                $decryptedValue = $this->encryptionService->decrypt(base64_decode($value));
+
+                if (json_last_error() == JSON_ERROR_NONE) {
+                    $data[$key] = json_decode($decryptedValue, true);
+                } else {
+                    $data[$key] = $decryptedValue;
+                }
+                
+            }
+        }
+
+        foreach ($data as $key => $value) {
+            $this->$key = $value;
+        }
     }
 }

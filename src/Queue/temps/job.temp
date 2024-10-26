@@ -16,18 +16,16 @@ class {{className}}
     public string $queue = 'default';
 
     /**
-     * Delay the job by a given amount of seconds.
+     * Delay the job by a given amount in minutes, hours, days, or seconds.
      *
-     * @param int $delay
-     *
+     * @var int
      */
     public int $delay = 0;
 
     /**
-     * Delay the job by a given amount of seconds.
+     * Delay Type (minutes, hours, days, or seconds)
      *
-     * @param string $delayType
-     *
+     * @var string
      */
     public string $delayType = 'minutes';
 

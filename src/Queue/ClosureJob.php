@@ -6,7 +6,7 @@ use Opis\Closure\SerializableClosure;
 use Igniter\Queues\Queue\DispatchableTrait;
 use Igniter\Queues\Queue\ShouldQueueInterface;
 
-class ClosureJob implements ShouldQueueInterface, IsEncryptedInterface
+class ClosureJob implements ShouldQueueInterface
 {
     use DispatchableTrait;
 

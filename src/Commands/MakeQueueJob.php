@@ -79,7 +79,7 @@ class MakeQueueJob extends BaseCommand
 
     protected function compileJobTemp($jobName)
     {
-        $job = str_replace('{{namespace}}', APP_NAMESPACE, file_get_contents(__DIR__.'/Queue/temps/job.temp'));
+        $job = str_replace('{{namespace}}', APP_NAMESPACE, file_get_contents(__DIR__.'/../Queue/temps/job.temp'));
         return str_replace(
             '{{className}}',
             $jobName,
