@@ -250,6 +250,30 @@ You can create the queue table by using the `queue:table` command.
 php spark queue:table
 ```
 
+## Specifying the Queue name
+
+You can specify the queue name by using the `queue` option.
+
+```php
+public function testQueue()
+{
+    toQueue(function () {
+        sleep(10);
+        // log to file or send an email
+    }, queue: 'emails');
+
+    return "Request is being Processed";
+}
+```
+
+For Dedicated Jobs, you can use the `queue` property on the job class.
+
+To specify the queue name when working the queue, you can use the `--queue` option.
+
+```bash
+php spark queue:work --queue emails
+```
+
 
 ## License
 
