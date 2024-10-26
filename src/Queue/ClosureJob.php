@@ -38,11 +38,12 @@ class ClosureJob implements ShouldQueueInterface
      *
      * @return void
      */
-    public function __construct(public $job, public $data = [], $delay = 0, $delayType = 'minutes')
+    public function __construct(public $job, public $data = [], $delay = 0, $delayType = 'minutes', $queue = 'default')
     {
         $this->job = new SerializableClosure($job);
         $this->delay = $delay;
         $this->delayType = $delayType;
+        $this->queue = $queue;
     }
 
     /**
