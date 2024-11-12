@@ -212,25 +212,29 @@ trait DispatchableTrait
     {
         $properties = get_object_vars($this);
 
-        if (is_null($this->encryptionService)) {
-            $this->encryptionService = Services::encryption();
+        if (!empty(env('encryption.key'))) {
+            if (is_null($this->encryptionService)) {
+                $this->encryptionService = Services::encryption();
+            }
         }
-
+        
         // Encrypt properties if the job implements IsEncryptedInterface
-        if ($this instanceof IsEncryptedInterface) {
-            foreach ($properties as $key => $value) {
-                if (in_array($key, ['encryptionService', 'delayType', 'delay', 'queue', 'queued'])) continue;
-
-                if (is_string($value)) {
-                    $properties[$key] = base64_encode($this->encryptionService->encrypt($value));
-                }
-
-                if (is_array($value)) {
-                    $properties[$key] = base64_encode($this->encryptionService->encrypt(json_encode($value)));
+        if ($this->encryptionService) {
+            if ($this instanceof IsEncryptedInterface) {
+                foreach ($properties as $key => $value) {
+                    if (in_array($key, ['encryptionService', 'delayType', 'delay', 'queue', 'queued'])) continue;
+    
+                    if (is_string($value)) {
+                        $properties[$key] = base64_encode($this->encryptionService->encrypt($value));
+                    }
+    
+                    if (is_array($value)) {
+                        $properties[$key] = base64_encode($this->encryptionService->encrypt(json_encode($value)));
+                    }
                 }
             }
         }
-
+        
         return $properties;
     }
 
