@@ -75,7 +75,7 @@ abstract class BaseConnector
 	 */
 	public function delay($min = 0, $delayType = 'minutes')
 	{
-		$this->availableAt = (new Time)->modify('+' . $min . ' ' . $delayType);
+		$this->availableAt = (new Time)->modify('+' . $min ?? 0 . ' ' . $delayType);
 
 		return $this;
 	}
