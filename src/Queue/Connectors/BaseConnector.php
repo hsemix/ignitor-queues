@@ -116,7 +116,7 @@ abstract class BaseConnector
 	/**
 	 * run a job from the queue
 	 *
-	 * @param string $job  the job to run
+	 * @param string $job  the job to run.
 	 * @param mixed  $data data for the job
 	 */
 	public function job(string|object $job, $data = [])
