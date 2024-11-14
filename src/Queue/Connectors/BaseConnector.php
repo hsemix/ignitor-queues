@@ -73,7 +73,7 @@ abstract class BaseConnector
 	 * @param  integer $min
 	 * @return $this
 	 */
-	public function delay($min, $delayType = 'minutes')
+	public function delay($min = 0, $delayType = 'minutes')
 	{
 		$this->availableAt = (new Time)->modify('+' . $min . ' ' . $delayType);
 
