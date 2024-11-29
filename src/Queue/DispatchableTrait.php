@@ -240,24 +240,28 @@ trait DispatchableTrait
 
     public function __unserialize(array $data): void
     {
-        if (is_null($this->encryptionService)) {
-            $this->encryptionService = Services::encryption();
+        if (!empty(env('encryption.key'))) {
+            if (is_null($this->encryptionService)) {
+                $this->encryptionService = Services::encryption();
+            }
         }
 
         // Decrypt properties if the job implements IsEncryptedInterface
-        if ($this instanceof IsEncryptedInterface) {
-            foreach ($data as $key => $value) {
+        if ($this->encryptionService) {
+            if ($this instanceof IsEncryptedInterface) {
+                foreach ($data as $key => $value) {
 
-                if (in_array($key, $this->primaryProperties)) continue;
-                
-                $decryptedValue = $this->encryptionService->decrypt(base64_decode($value));
+                    if (in_array($key, $this->primaryProperties)) continue;
+                    
+                    $decryptedValue = $this->encryptionService->decrypt(base64_decode($value));
 
-                if (json_last_error() == JSON_ERROR_NONE) {
-                    $data[$key] = json_decode($decryptedValue, true);
-                } else {
-                    $data[$key] = $decryptedValue;
+                    if (json_last_error() == JSON_ERROR_NONE) {
+                        $data[$key] = json_decode($decryptedValue, true);
+                    } else {
+                        $data[$key] = $decryptedValue;
+                    }
+                    
                 }
-                
             }
         }
 
