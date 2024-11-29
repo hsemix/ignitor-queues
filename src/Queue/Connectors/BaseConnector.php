@@ -73,9 +73,9 @@ abstract class BaseConnector
 	 * @param  integer $min
 	 * @return $this
 	 */
-	public function delay($min = 0, $delayType = 'minutes')
+	public function delay($min, $delayType = 'minutes')
 	{
-		$this->availableAt = (new Time)->modify('+' . $min ?? 0 . ' ' . $delayType);
+		$this->availableAt = (new Time)->modify('+' . $min . ' ' . $delayType);
 
 		return $this;
 	}
@@ -116,7 +116,7 @@ abstract class BaseConnector
 	/**
 	 * run a job from the queue
 	 *
-	 * @param string $job  the job to run.
+	 * @param string $job  the job to run
 	 * @param mixed  $data data for the job
 	 */
 	public function job(string|object $job, $data = [])

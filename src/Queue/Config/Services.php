@@ -3,6 +3,7 @@
 namespace Igniter\Queues\Queue\Config;
 
 use CodeIgniter\Config\BaseService;
+use Igniter\Queues\Encryption\AESEncryption;
 
 /**
  * Services Configuration file.
