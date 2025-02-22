@@ -7,6 +7,7 @@ use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\GeneratorTrait;
 use Igniter\Queues\Queue\Config\Services;
 use Igniter\Queues\Queue\Connectors\BaseConnector;
+use function Opis\Closure\{unserialize};
 
 class QueueWork extends BaseCommand
 {
