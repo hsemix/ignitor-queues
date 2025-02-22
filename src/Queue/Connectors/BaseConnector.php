@@ -5,6 +5,7 @@ namespace Igniter\Queues\Queue\Connectors;
 use CodeIgniter\I18n\Time;
 use CodeIgniter\Events\Events;
 use Igniter\Queues\Queue\CanFailInterface;
+use function Opis\Closure\{serialize, unserialize};
 
 /**
  * Base Queue handler.

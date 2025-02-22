@@ -2,7 +2,6 @@
 
 namespace Igniter\Queues\Queue;
 
-use Opis\Closure\SerializableClosure;
 use Igniter\Queues\Queue\DispatchableTrait;
 use Igniter\Queues\Queue\ShouldQueueInterface;
 
@@ -40,7 +39,7 @@ class ClosureJob implements ShouldQueueInterface, CanFailInterface
      */
     public function __construct(public $job, public $data = [], $delay = 0, $delayType = 'minutes', $queue = 'default', $onFailure = null)
     {
-        $this->job = new SerializableClosure($job);
+        $this->job = $job;
         $this->delay = $delay;
         $this->delayType = $delayType;
         $this->queue = $queue;
